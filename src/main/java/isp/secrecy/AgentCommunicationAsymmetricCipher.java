@@ -1,42 +1,18 @@
 package isp.secrecy;
 
+import javax.crypto.Cipher;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * I0->I1->A1->B1->A2->B2->A3->B3->A4->[B4]
- * <p/>
- * EXERCISE B4:
+ * EXERCISE
  * An agent communication example. Message Confidentiality is provided using asymmetric
  * cypher algorithm.
  * <p>
  * IMPORTANT: This is an insecure example. One should never encrypt with a TDF (such as RSA) directly.
  * Such construction is deterministic and many known attacks against it exist.
- * <p/>
- * Special care has to be taken when transferring binary data over the string-based communication
- * channel, therefore we convert byte array into String of hexadecimal characters.
- * <p/>
- * A communication channel is implemented by thread-safe blocking queue using
- * linked-list data structure.
- * <p/>
- * Both agent behavior are implemented by extending Agents class and
- * creating anonymous class and overriding run(...) method.
- * <p/>
- * Both agents are "fired" at the end of the main method definition below.
- * <p/>
- * EXERCISE:
- * - Study this example.
- * - Observe both ciphertext in hexadecimal format
- * - HW: Mount a man in the middle attack and try to figure out the contents of the message
- * <p/>
- * INFO:
- * http://docs.oracle.com/javase/7/docs/technotes/guides/security/crypto/CryptoSpec.html#Cipher
- *
- * @author Iztok Starc <iztok.starc@fri.uni-lj.si>
- * @version 1
- * @date 19. 12. 2011
  */
 
 public class AgentCommunicationAsymmetricCipher {
@@ -69,16 +45,18 @@ public class AgentCommunicationAsymmetricCipher {
             public void execute() throws Exception {
                 // STEP 3.1:  Alice creates a message
                 final String text = "I love you Bob. Kisses, Alice.";
+                final byte[] pt = text.getBytes("UTF-8");
 
-                // TODO STEP 3.2: Alice encrypts the text with selected algorithm using Bob's public key.
+                // TODO STEP 3.2: Alice encrypts the text using Bob's public key.
+                final Cipher rsa = Cipher.getInstance(cipher);
+                rsa.init(Cipher.ENCRYPT_MODE, cipherKey);
+                final byte[] ct = rsa.doFinal(pt);
 
-
-                // TODO STEP 3.3: Encode the cipher text into string of hexadecimal numbers
-
-
-                // TODO STEP 3.4: Alice logs the act of sending the message
+                // TODO STEP 3.3: Alice logs the act of sending the message
+                print("Sending %s (%s)", text, hex(ct));
 
                 // TODO STEP 3.4: Send the message across the channel
+                outgoing.put(ct);
             }
         };
 
@@ -91,17 +69,19 @@ public class AgentCommunicationAsymmetricCipher {
         final Agent bob = new Agent("bob", bob2alice, alice2bob, bobKP.getPrivate(), encryptionAlg) {
             @Override
             public void execute() throws Exception {
-                // STEP 4.1: Bob receives the message
-                final byte[] cipherTextHEX = incoming.take();
-                System.out.println("[Bob]: Received " + cipherTextHEX);
+                // STEP 4.1: Bob receives the cipher text
+                final byte[] ct = incoming.take();
 
-                // TODO STEP 4.2: Decode the incoming string of HEX literals into a byte array
-
-                // TODO STEP 4.3: Bob decrypts the cipher text
+                // TODO STEP 4.2: Bob decrypts the cipher text
+                final Cipher rsa = Cipher.getInstance(cipher);
+                rsa.init(Cipher.DECRYPT_MODE, cipherKey);
+                final byte[] pt = rsa.doFinal(ct);
 
                 // TODO STEP 4.3: Bob creates a string from the decrypted byte array
+                final String message = new String(pt, "UTF-8");
 
                 // TODO STEP 4.4: Bob displays the text
+                print("Received %s (%s)", message, hex(ct));
             }
         };
 
