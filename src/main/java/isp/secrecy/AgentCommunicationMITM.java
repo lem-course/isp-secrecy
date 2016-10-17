@@ -34,19 +34,6 @@ public class AgentCommunicationMITM {
             public void execute() throws Exception {
                 final byte[] bytes = incoming.take();
                 print(" IN: %s", hex(bytes));
-
-                final String oldPrefix = "from: ta.david@fri.uni-lj.si\n" +
-                        "to: prof.denis@fri.uni-lj.si\n";
-                final String newPrefix = "from: ta.david@fri.uni-lj.si\n" +
-                        "to: isp.student@gmail.com   \n";
-
-                final byte[] oldBytes = oldPrefix.getBytes("UTF-8");
-                final byte[] newBytes = newPrefix.getBytes("UTF-8");
-
-                for (int i = 0; i < oldBytes.length; i++) {
-                    bytes[i] = (byte) (bytes[i] ^ oldBytes[i] ^ newBytes[i]);
-                }
-
                 print("OUT: %s", hex(bytes));
                 outgoing.put(bytes);
             }

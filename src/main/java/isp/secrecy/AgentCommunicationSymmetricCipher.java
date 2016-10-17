@@ -1,8 +1,6 @@
 package isp.secrecy;
 
-import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.spec.IvParameterSpec;
 import java.security.Key;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,16 +33,7 @@ public class AgentCommunicationSymmetricCipher {
             @Override
             public void execute() throws Exception {
                 final String message = "I love you Bob. Kisses, Alice.";
-                final byte[] pt = message.getBytes("UTF-8");
-                Cipher aes = Cipher.getInstance(AES_CBC[1]);
-                aes.init(Cipher.ENCRYPT_MODE, cipherKey);
 
-                final byte[] iv = aes.getIV();
-                final byte[] ct = aes.doFinal(pt);
-
-                print("Sending: '%s' (%s, %s)", message, hex(iv), hex(ct));
-                outgoing.put(iv);
-                outgoing.put(ct);
             }
         };
 
@@ -61,16 +50,7 @@ public class AgentCommunicationSymmetricCipher {
             @Override
             public void execute() throws Exception {
                 // TODO
-                final byte[] iv = incoming.take();
-                final byte[] ct = incoming.take();
 
-                final Cipher aes = Cipher.getInstance(AES_CBC[1]);
-                aes.init(Cipher.DECRYPT_MODE, cipherKey, new IvParameterSpec(iv));
-                final byte[] pt = aes.doFinal(ct);
-
-                final String message = new String(pt, "UTF-8");
-
-                print("Received: '%s' (%s, %s)", message, hex(iv), hex(ct));
             }
         };
 
