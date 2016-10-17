@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * EXERCISE:
  * Implement a brute force key search (exhaustive key search) if you know that the
  * message is:
  * "I would like to keep this text confidential Bob. Kind regards, Alice."
@@ -16,6 +15,8 @@ import java.util.Random;
  * Also assume, the the key has be very poorly chosen. In particular, as an attacker,
  * you are certain that all bytes in the key, with the exception of th last three bytes,
  * have been set to 0.
+ * <p>
+ * The length of DES key is 8 bytes.
  * <p>
  * To manually specify a key, use the class {@link javax.crypto.spec.SecretKeySpec})
  */
@@ -49,7 +50,6 @@ public class ExhaustiveSearch {
 
     public static byte[] bruteforceKey(byte[] ct, String message) throws Exception {
         // TODO
-
         final byte[] attempt = new byte[8];
         final Cipher oscar = Cipher.getInstance("DES/ECB/PKCS5Padding");
 
