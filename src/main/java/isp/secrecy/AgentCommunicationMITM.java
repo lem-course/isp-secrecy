@@ -2,6 +2,7 @@ package isp.secrecy;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.BlockingQueue;
@@ -9,23 +10,25 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class AgentCommunicationMITM {
     public static void main(String[] args) throws NoSuchAlgorithmException {
-        final Key keyDavid2Smtp = KeyGenerator.getInstance("RC4").generateKey();
+        final Key keyDavid2Smtp = KeyGenerator.getInstance("AES").generateKey();
 
         final BlockingQueue<byte[]> david2mitm = new LinkedBlockingQueue<>();
         final BlockingQueue<byte[]> mitm2smtp = new LinkedBlockingQueue<>();
 
-        final Agent david = new Agent("DAVID", david2mitm, null, keyDavid2Smtp, "RC4") {
+        final Agent david = new Agent("DAVID", david2mitm, null, keyDavid2Smtp, "AES/CTR/NoPadding") {
             @Override
             public void execute() throws Exception {
                 final String message = "from: ta.david@fri.uni-lj.si\n" +
                         "to: prof.denis@fri.uni-lj.si\n\n" +
                         "Hi! Find attached <some secret stuff>!";
 
-                final Cipher rc4 = Cipher.getInstance("RC4");
-                rc4.init(Cipher.ENCRYPT_MODE, keyDavid2Smtp);
-                final byte[] ct = rc4.doFinal(message.getBytes("UTF-8"));
+                final Cipher aes = Cipher.getInstance(cipher);
+                aes.init(Cipher.ENCRYPT_MODE, cipherKey);
+                final byte[] ct = aes.doFinal(message.getBytes("UTF-8"));
+                final byte[] iv = aes.getIV();
                 print("sending: '%s' (%s)", message, hex(ct));
                 outgoing.put(ct);
+                outgoing.put(iv);
             }
         };
 
@@ -33,19 +36,22 @@ public class AgentCommunicationMITM {
             @Override
             public void execute() throws Exception {
                 final byte[] bytes = incoming.take();
+                final byte[] iv = incoming.take();
                 print(" IN: %s", hex(bytes));
                 print("OUT: %s", hex(bytes));
                 outgoing.put(bytes);
+                outgoing.put(iv);
             }
         };
 
-        final Agent smtp = new Agent("SMTP SERVER", null, mitm2smtp, keyDavid2Smtp, "RC4") {
+        final Agent smtp = new Agent("SMTP SERVER", null, mitm2smtp, keyDavid2Smtp, "AES/CTR/NoPadding") {
             @Override
             public void execute() throws Exception {
                 final byte[] ct = incoming.take();
-                final Cipher rc4 = Cipher.getInstance("RC4");
-                rc4.init(Cipher.DECRYPT_MODE, keyDavid2Smtp);
-                final byte[] pt = rc4.doFinal(ct);
+                final byte[] iv = incoming.take();
+                final Cipher aes = Cipher.getInstance(cipher);
+                aes.init(Cipher.DECRYPT_MODE, cipherKey, new IvParameterSpec(iv));
+                final byte[] pt = aes.doFinal(ct);
                 final String message = new String(pt, "UTF-8");
 
                 print("got: '%s' (%s)", message, hex(ct));
