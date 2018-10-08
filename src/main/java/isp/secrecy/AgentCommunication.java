@@ -20,7 +20,7 @@ public class AgentCommunication {
 
         env.add(new Agent("alice") {
             @Override
-            public void run() {
+            public void task() {
                 final byte[] payload = "Hi, Bob, this is Alice.".getBytes();
                 send("bob", payload);
                 final byte[] received = receive("bob");
@@ -30,7 +30,7 @@ public class AgentCommunication {
 
         env.add(new Agent("bob") {
             @Override
-            public void run() {
+            public void task() {
                 send("alice", "Hey Alice, Bob here.".getBytes());
                 print("Got '%s'", new String(receive("alice")));
             }
