@@ -1,5 +1,8 @@
 package isp.secrecy;
 
+import fri.isp.Agent;
+import fri.isp.Environment;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,31 +16,27 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class AgentCommunication {
     public static void main(String[] args) {
-        final BlockingQueue<byte[]> alice2bob = new LinkedBlockingQueue<>();
-        final BlockingQueue<byte[]> bob2alice = new LinkedBlockingQueue<>();
+        final Environment env = new Environment();
 
-        final Agent alice = new Agent("alice", alice2bob, bob2alice, null, null) {
+        env.add(new Agent("alice") {
             @Override
-            public void execute() throws Exception {
-                final String message = "I love you Bob. Kisses, Alice.";
-                final byte[] bytes = message.getBytes("UTF-8");
-
-                print("Sending: '%s' (HEX: %s)", message, hex(bytes));
-                outgoing.put(bytes);
+            public void run() {
+                final byte[] payload = "Hi, Bob, this is Alice.".getBytes();
+                send("bob", payload);
+                final byte[] received = receive("bob");
+                print("Got '%s', converted to string: '%s'", hex(received), new String(received));
             }
-        };
+        });
 
-        final Agent bob = new Agent("bob", bob2alice, alice2bob, null, null) {
+        env.add(new Agent("bob") {
             @Override
-            public void execute() throws Exception {
-                final byte[] bytes = incoming.take();
-                final String message = new String(bytes, "UTF-8");
-                print("Received: '%s' (HEX: %s)", message, hex(bytes));
+            public void run() {
+                send("alice", "Hey Alice, Bob here.".getBytes());
+                print("Got '%s'", new String(receive("alice")));
             }
-        };
+        });
 
-        // start both threads
-        bob.start();
-        alice.start();
+        env.connect("alice", "bob");
+        env.start();
     }
 }

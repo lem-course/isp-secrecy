@@ -3,6 +3,7 @@ package isp.secrecy;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 /**
@@ -15,7 +16,7 @@ import java.security.Key;
  * that Alice has send the following message "I would like to keep this text confidential Bob. Kind regards, Alice."
  * (Known-plaintext attack) (Use DES and manually set a poor key; class {@link javax.crypto.spec.SecretKeySpec})
  * <p>
- * http://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html#Cipher
+ * https://docs.oracle.com/javase/10/security/java-cryptography-architecture-jca-reference-guide.htm
  */
 public class SymmetricCipherExample {
     // BLOCK CIPHERS
@@ -37,7 +38,7 @@ public class SymmetricCipherExample {
         // STEP 1: Alice and Bob agree upon a cipher and a shared secret key
         final Key key = KeyGenerator.getInstance(cipherName[0]).generateKey();
 
-        final byte[] clearText = message.getBytes("UTF-8");
+        final byte[] clearText = message.getBytes(StandardCharsets.UTF_8);
         System.out.println("[PT] " + DatatypeConverter.printHexBinary(clearText));
 
         //  STEP 2: Create a cipher, encrypt the PT and, optionally, extract cipher parameters (such as IV)
@@ -60,7 +61,7 @@ public class SymmetricCipherExample {
 
         // Todo: What happens if the key is incorrect? (Try with RC4)
 
-        // STEP 5: Create a string from a byte aray
-        System.out.println("[MESSAGE] " + new String(decryptedText, "UTF-8"));
+        // STEP 5: Create a string from a byte array
+        System.out.println("[MESSAGE] " + new String(decryptedText, StandardCharsets.UTF_8));
     }
 }
