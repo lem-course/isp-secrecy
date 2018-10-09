@@ -3,9 +3,6 @@ package isp.secrecy;
 import fri.isp.Agent;
 import fri.isp.Environment;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * A communication channel is implemented with thread-safe blocking queue.
  * <p/>
