@@ -1,9 +1,9 @@
 package isp.secrecy;
 
+import fri.isp.Agent;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 /**
@@ -24,6 +24,7 @@ public class SymmetricCipherExample {
     public static final String[] DES3 = {"DESede", "DESede/ECB/PKCS5Padding"};
     public static final String[] AES_ECB = {"AES", "AES/ECB/PKCS5Padding"};
     public static final String[] AES_CBC = {"AES", "AES/CBC/PKCS5Padding"};
+    public static final String[] AES_CTR = {"AES", "AES/CTR/NoPadding"};
 
     // STREAM CIPHER
     public static final String[] RC4 = {"RC4", "RC4"};
@@ -38,8 +39,8 @@ public class SymmetricCipherExample {
         // STEP 1: Alice and Bob agree upon a cipher and a shared secret key
         final Key key = KeyGenerator.getInstance(cipherName[0]).generateKey();
 
-        final byte[] clearText = message.getBytes(StandardCharsets.UTF_8);
-        System.out.println("[PT] " + DatatypeConverter.printHexBinary(clearText));
+        final byte[] clearText = message.getBytes();
+        System.out.println("[PT] " + Agent.hex(clearText));
 
         //  STEP 2: Create a cipher, encrypt the PT and, optionally, extract cipher parameters (such as IV)
         final Cipher encryption = Cipher.getInstance(cipherName[1]);
@@ -47,7 +48,7 @@ public class SymmetricCipherExample {
         final byte[] cipherText = encryption.doFinal(clearText);
 
         // STEP 3: Print out cipher text (in HEX) [this is what an attacker would see]
-        System.out.println("[CT] " + DatatypeConverter.printHexBinary(cipherText));
+        System.out.println("[CT] " + Agent.hex(cipherText));
 
         /*
          * STEP 4.
@@ -57,11 +58,11 @@ public class SymmetricCipherExample {
         final Cipher decryption = Cipher.getInstance(cipherName[1]);
         decryption.init(Cipher.DECRYPT_MODE, key);
         final byte[] decryptedText = decryption.doFinal(cipherText);
-        System.out.println("[PT] " + DatatypeConverter.printHexBinary(decryptedText));
+        System.out.println("[PT] " + Agent.hex(decryptedText));
 
-        // Todo: What happens if the key is incorrect? (Try with RC4)
+        // Todo: What happens if the key is incorrect? (Try with RC4 or AES in CTR mode)
 
         // STEP 5: Create a string from a byte array
-        System.out.println("[MESSAGE] " + new String(decryptedText, StandardCharsets.UTF_8));
+        System.out.println("[MESSAGE] " + new String(decryptedText));
     }
 }

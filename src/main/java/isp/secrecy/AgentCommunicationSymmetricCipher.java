@@ -30,8 +30,9 @@ public class AgentCommunicationSymmetricCipher {
                 /* TODO STEP 3:
                  * Alice creates, encrypts and sends a message
                  *
-                 * Do not forget: In CBC mode, one has to also send the IV.
-                 * IV can be accessed via the cipher.getIV() call
+                 * Do not forget: In CBC (and CTR mode), you have to also
+                 * send the IV. The IV can be accessed via the
+                 * cipher.getIV() call
                  */
             }
         });

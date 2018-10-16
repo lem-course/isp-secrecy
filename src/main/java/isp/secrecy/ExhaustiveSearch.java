@@ -22,7 +22,7 @@ public class ExhaustiveSearch {
         // TODO
     }
 
-    public static byte[] bruteforceKey(byte[] ct, String message) throws Exception {
+    public static byte[] bruteForceKey(byte[] ct, String message) throws Exception {
         // TODO
 
         return null;
