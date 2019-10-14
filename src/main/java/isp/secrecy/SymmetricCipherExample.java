@@ -19,31 +19,28 @@ import java.security.Key;
  * https://docs.oracle.com/javase/10/security/java-cryptography-architecture-jca-reference-guide.htm
  */
 public class SymmetricCipherExample {
-    // BLOCK CIPHERS
-    public static final String[] DES = {"DES", "DES/ECB/PKCS5Padding"};
-    public static final String[] DES3 = {"DESede", "DESede/ECB/PKCS5Padding"};
-    public static final String[] AES_ECB = {"AES", "AES/ECB/PKCS5Padding"};
-    public static final String[] AES_CBC = {"AES", "AES/CBC/PKCS5Padding"};
-    public static final String[] AES_CTR = {"AES", "AES/CTR/NoPadding"};
+    // STREAM CIPHERS
+    // RC4
 
-    // STREAM CIPHER
-    public static final String[] RC4 = {"RC4", "RC4"};
+    // BLOCK CIPHERS
+    // DES with padding: "DES/ECB/PKCS5Padding"
+    // Tripple DES with padding: "DESede/ECB/PKCS5Padding"
+    // AES in ECB with padding: "AES/ECB/PKCS5Padding"
+    // AES in CBC with padding, "AES/CBC/PKCS5Padding"
+    // AES in CTR without padding: "AES/CTR/NoPadding"
 
     public static void main(String[] args) throws Exception {
-
-        final String[] cipherName = RC4;
-
         final String message = "I would like to keep this text confidential Bob. Kind regards, Alice.";
         System.out.println("[MESSAGE] " + message);
 
         // STEP 1: Alice and Bob agree upon a cipher and a shared secret key
-        final Key key = KeyGenerator.getInstance(cipherName[0]).generateKey();
+        final Key key = KeyGenerator.getInstance("RC4").generateKey();
 
         final byte[] clearText = message.getBytes();
         System.out.println("[PT] " + Agent.hex(clearText));
 
         //  STEP 2: Create a cipher, encrypt the PT and, optionally, extract cipher parameters (such as IV)
-        final Cipher encryption = Cipher.getInstance(cipherName[1]);
+        final Cipher encryption = Cipher.getInstance("RC4");
         encryption.init(Cipher.ENCRYPT_MODE, key);
         final byte[] cipherText = encryption.doFinal(clearText);
 
@@ -55,7 +52,7 @@ public class SymmetricCipherExample {
          * The receiver creates a Cipher object, defines the algorithm, the secret key and
          * possibly additional parameters (such as IV), and then decrypts the cipher text
          */
-        final Cipher decryption = Cipher.getInstance(cipherName[1]);
+        final Cipher decryption = Cipher.getInstance("RC4");
         decryption.init(Cipher.DECRYPT_MODE, key);
         final byte[] decryptedText = decryption.doFinal(cipherText);
         System.out.println("[PT] " + Agent.hex(decryptedText));
