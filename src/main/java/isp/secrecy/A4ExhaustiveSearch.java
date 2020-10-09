@@ -6,7 +6,7 @@ package isp.secrecy;
  * "I would like to keep this text confidential Bob. Kind regards, Alice."
  * <p>
  * Assume the message was encrypted with "DES/ECB/PKCS5Padding".
- * Also assume, the the key has be very poorly chosen. In particular, as an attacker,
+ * Also assume that the key was poorly chosen. In particular, as an attacker,
  * you are certain that all bytes in the key, with the exception of th last three bytes,
  * have been set to 0.
  * <p>
@@ -14,7 +14,7 @@ package isp.secrecy;
  * <p>
  * To manually specify a key, use the class {@link javax.crypto.spec.SecretKeySpec})
  */
-public class ExhaustiveSearch {
+public class A4ExhaustiveSearch {
     public static void main(String[] args) throws Exception {
         final String message = "I would like to keep this text confidential Bob. Kind regards, Alice.";
         System.out.println("[MESSAGE] " + message);

@@ -8,16 +8,15 @@ import java.security.Key;
 
 /**
  * TASK:
- * Assuming Alice and Bob know a shared secret key in advance, secure the channel using a
- * AES in CBC mode
+ * Assuming Alice and Bob know a shared secret key in advance, secure the channel using
+ * AES in CBC mode. Then exchange ten messages between Alice and Bob.
  * <p>
- * http://docs.oracle.com/javase/10/docs/technotes/guides/security/crypto/CryptoSpec.html#Cipher
+ * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/crypto/Cipher.html
  */
-public class AgentCommunicationSymmetricCipher {
-    public static String AES_CBC = "AES/CBC/PKCS5Padding";
-
+public class A1AESInCBCMode {
     public static void main(String[] args) throws Exception {
         // STEP 1: Alice and Bob beforehand agree upon a cipher algorithm and a shared secret key
+        // This key may be accessed as a global variable by both agents
         final Key key = KeyGenerator.getInstance("AES").generateKey();
 
         // STEP 2: Setup communication
@@ -28,7 +27,8 @@ public class AgentCommunicationSymmetricCipher {
             public void task() throws Exception {
                 final String message = "I love you Bob. Kisses, Alice.";
                 /* TODO STEP 3:
-                 * Alice creates, encrypts and sends a message
+                 * Alice creates, encrypts and sends a message to Bob. Bob replies to the message.
+                 * Such exchange repeats 10 times.
                  *
                  * Do not forget: In CBC (and CTR mode), you have to also
                  * send the IV. The IV can be accessed via the

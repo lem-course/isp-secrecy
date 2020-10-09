@@ -9,26 +9,11 @@ import java.security.Key;
 /**
  * EXERCISE:
  * - Study the example
- * - Play with different ciphers
- * <p>
- * - Homework: Oscar intercepts the message and would like to decrypt the ciphertext. Help Oscar to
- * decrypt the cipher text using brute force key search (exhaustive key search) if Oscar knows
- * that Alice has send the following message "I would like to keep this text confidential Bob. Kind regards, Alice."
- * (Known-plaintext attack) (Use DES and manually set a poor key; class {@link javax.crypto.spec.SecretKeySpec})
- * <p>
- * https://docs.oracle.com/javase/10/security/java-cryptography-architecture-jca-reference-guide.htm
+ * - Test different ciphers
+ *
+ * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/crypto/Cipher.html
  */
 public class SymmetricCipherExample {
-    // STREAM CIPHERS
-    // RC4
-
-    // BLOCK CIPHERS
-    // DES with padding: "DES/ECB/PKCS5Padding"
-    // Tripple DES with padding: "DESede/ECB/PKCS5Padding"
-    // AES in ECB with padding: "AES/ECB/PKCS5Padding"
-    // AES in CBC with padding, "AES/CBC/PKCS5Padding"
-    // AES in CTR without padding: "AES/CTR/NoPadding"
-
     public static void main(String[] args) throws Exception {
         final String message = "Hi Bob, this is Alice.";
         System.out.println("[MESSAGE] " + message);
