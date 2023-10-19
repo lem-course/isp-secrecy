@@ -3,7 +3,10 @@ package isp.secrecy;
 import fri.isp.Agent;
 import fri.isp.Environment;
 
+import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
+
 import java.security.Key;
 
 /**
@@ -14,6 +17,10 @@ import java.security.Key;
  * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/crypto/Cipher.html
  */
 public class A2AESInCTRMode {
+    
+    private static byte[] cipherText;  // Class-level variable to hold cipher text
+    private static byte[] iv;  // Class-level variable to hold IV
+
     public static void main(String[] args) throws Exception {
         // STEP 1: Alice and Bob beforehand agree upon a cipher algorithm and a shared secret key
         // This key may be accessed as a global variable by both agents
@@ -34,6 +41,32 @@ public class A2AESInCTRMode {
                  * send the IV. The IV can be accessed via the
                  * cipher.getIV() call
                  */
+                final byte[] pt = message.getBytes();
+                
+                for (int i = 0; i < 10; i++) {
+                    final Cipher encrypt = Cipher.getInstance("AES/CTR/NoPadding");
+                    encrypt.init(Cipher.ENCRYPT_MODE, key);
+
+                    cipherText = encrypt.doFinal(pt);
+                    iv = encrypt.getIV();
+                    //System.out.println("[iv] " + Agent.hex(iv));
+                
+                    send("bob", iv);
+                    send("bob", cipherText);
+
+                    byte[] iv = receive("bob");
+                    byte[] cipherText = receive("bob");
+
+                    final Cipher decrypt = Cipher.getInstance("AES/CTR/NoPadding");
+                    IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                    decrypt.init(Cipher.DECRYPT_MODE, key, ivSpec);
+                    final byte[] dt1 = decrypt.doFinal(cipherText);
+
+                    System.out.println("[Message]" + new String(dt1));
+                }
+
+                
+
             }
         });
 
@@ -50,6 +83,33 @@ public class A2AESInCTRMode {
                  *
                  * You then pass this object to the cipher init() method call.*
                  */
+                final String message1 = "I love you too";
+                final byte[] pt1 = message1.getBytes();
+                
+                for (int i = 0; i < 10; i++) {
+
+                    byte[] iv = receive("alice");
+                    byte[] cipherText = receive("alice");
+
+                    final Cipher decrypt = Cipher.getInstance("AES/CTR/NoPadding");
+                    IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                    decrypt.init(Cipher.DECRYPT_MODE, key, ivSpec);
+                    final byte[] dt = decrypt.doFinal(cipherText);
+
+                    System.out.println("[Message]" + new String(dt));
+
+                    final Cipher encrypt = Cipher.getInstance("AES/CTR/NoPadding");
+                    encrypt.init(Cipher.ENCRYPT_MODE, key);
+
+                    cipherText = encrypt.doFinal(pt1);
+                    iv = encrypt.getIV();
+                    //System.out.println("[iv] " + Agent.hex(iv));
+                
+                    send("alice", iv);
+                    send("alice", cipherText);
+
+
+                }
             }
         });
 
