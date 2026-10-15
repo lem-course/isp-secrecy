@@ -19,8 +19,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
         </plugins>
@@ -37,7 +36,7 @@
         <dependency>
             <groupId>com.github.lem-course</groupId>
             <artifactId>isp-communication-model</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>853eda821c6f950ecc09cd19c5dad3e0eb7c8df1</version>
         </dependency>
     </dependencies>
 </project>

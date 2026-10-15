@@ -2,9 +2,11 @@ package isp.secrecy;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
+
 import fri.isp.Agent;
 import fri.isp.Environment;
 
@@ -17,7 +19,7 @@ import fri.isp.Environment;
  * interested in seeing the contents of that email. Luckily, a few things go your way.
  * 
  * First, David has no Internet connectivity, but your mobile phone does. So you kindly offer to
- * set-up a mobile hot-spot through which David will be able to connect to a FMTP server. (You get
+ * set up a mobile hotspot through which David will be able to connect to an FMTP server. (You get
  * to play the role of the man-in-the-middle!)
  * 
  * FMTP is a new kind of a mail protocol; it stands for Funny Mail Transfer Protocol, and it is a
@@ -25,7 +27,7 @@ import fri.isp.Environment;
  * the email of the sender, the third line the subject of the email, then we have an empty line and
  * finally we have the email contents.
  * 
- * All that David’s mail client has to do to send an email, is to deliver a string like the
+ * All that David's mail client has to do to send an email, is to deliver a string like the
  * following to the FMTP server.
  * 
  * ```txt
@@ -47,14 +49,20 @@ import fri.isp.Environment;
  * <Email body>
  * ```
  * 
- * Third, David is naive enough to tell you that he’s sending the email to professor Denis.
+ * Second, David is naive enough to tell you that he's sending the email to professor Denis.
  * So you know the contents of the first line of the plaintext.
  * 
- * Fourth, David is using AES in CTR mode. No integrity checks are in place.
+ * Third, David is using AES in CTR mode. No integrity checks are in place.
  * 
  * The task. As the man-in-the-middle (MITM), modify the messages so that the FMTP server will not send the
  * email to professor Denis, but instead will forward the email to the address that you control. In
  * this exercise the address is `isp@gmail.com`.
+ *
+ * Modify only the student agent's task, using intercepted data and the known recipient line.
+ * Do not access the shared key or change David's task, the server's task, or the environment.
+ * The provided server only decrypts and prints the message; it does not actually forward email.
+ * Success means that the first line of its decrypted output, after trimming surrounding spaces,
+ * equals isp@gmail.com. Preserve the sender, subject, blank line, and body unchanged.
  * 
  */
 public class A5ActiveMITM {

@@ -1,23 +1,28 @@
 package isp.secrecy;
 
+import java.security.Key;
+
+import javax.crypto.KeyGenerator;
+
 import fri.isp.Agent;
 import fri.isp.Environment;
 
-import javax.crypto.KeyGenerator;
-import java.security.Key;
-
 /**
  * TASK:
- * Assuming Alice and Bob know a shared secret key in advance, secure the channel using
- * ChaCha20 stream cipher. Then exchange ten messages between Alice and Bob.
+ * Assuming Alice and Bob know a shared secret key in advance, encrypt their messages
+ * using the ChaCha20 stream cipher to provide confidentiality. Perform ten request-reply rounds:
+ * Alice sends one encrypted message and Bob sends one encrypted reply in each round
+ * (twenty encrypted messages in total). Both agents must decrypt and display received messages.
+ * This exercise does not provide message authentication.
  * <p>
- * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/crypto/Cipher.html
+ * https://docs.oracle.com/en/java/javase/21/docs/api/java.base/javax/crypto/Cipher.html
+ * https://docs.oracle.com/en/java/javase/21/docs/api/java.base/javax/crypto/spec/ChaCha20ParameterSpec.html
  */
 public class A3ChaCha20 {
     public static void main(String[] args) throws Exception {
         // STEP 1: Alice and Bob beforehand agree upon a cipher algorithm and a shared secret key
-        // This key may be accessed as a global variable by both agents
-        final Key key = KeyGenerator.getInstance("AES").generateKey();
+        // Both agents can access this shared key from the enclosing method
+        final Key key = KeyGenerator.getInstance("ChaCha20").generateKey();
 
         // STEP 2: Setup communication
         final Environment env = new Environment();
@@ -28,9 +33,12 @@ public class A3ChaCha20 {
                 final String message = "I love you Bob. Kisses, Alice.";
                 /* TODO STEP 3:
                  * Alice creates, encrypts and sends a message to Bob. Bob replies to the message.
-                 * Such exchange repeats 10 times.
+                 * Repeat for ten request-reply rounds.
                  *
-                 * Recall, ChaCha2 requires that you specify the nonce and the counter explicitly.
+                 * For this exercise, explicitly specify a 12-byte nonce and an initial block
+                 * counter using ChaCha20ParameterSpec. Use a fresh nonce for every encryption,
+                 * including Bob's replies: nonces must not repeat under the shared key.
+                 * Make the nonce and initial counter available to the receiver; neither is secret.
                  */
             }
         });
@@ -38,7 +46,8 @@ public class A3ChaCha20 {
         env.add(new Agent("bob") {
             @Override
             public void task() throws Exception {
-                // TODO
+                // TODO: Receive, decrypt and display Alice's message, then encrypt and send
+                // a reply with a fresh nonce. Repeat for ten request-reply rounds.
             }
         });
 

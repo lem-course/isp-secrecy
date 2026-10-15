@@ -1,17 +1,24 @@
 package isp.secrecy;
 
-import fri.isp.Agent;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import java.security.Key;
+
+import fri.isp.Agent;
 
 /**
  * EXERCISE:
  * - Study the example
  * - Test different ciphers
  *
- * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/crypto/Cipher.html
+ * RC4 is used here to keep the introductory example simple: initialization requires
+ * only a key, with no IV or nonce. RC4 is obsolete and insecure and must not be used
+ * in new applications; this example demonstrates API usage, not recommended cryptography.
+ * When testing other ciphers, adapt the key type and cipher parameters as needed.
+ *
+ * https://docs.oracle.com/en/java/javase/21/docs/api/java.base/javax/crypto/Cipher.html
  */
 public class SymmetricCipherExample {
     public static void main(String[] args) throws Exception {
@@ -21,7 +28,7 @@ public class SymmetricCipherExample {
         // STEP 1: Alice and Bob agree upon a cipher and a shared secret key
         final Key key = KeyGenerator.getInstance("RC4").generateKey();
 
-        final byte[] pt = message.getBytes();
+        final byte[] pt = message.getBytes(StandardCharsets.UTF_8);
         System.out.println("[PT] " + Agent.hex(pt));
 
         //  STEP 2: Create a cipher, encrypt the PT and, optionally, extract cipher parameters (such as IV)
@@ -45,6 +52,6 @@ public class SymmetricCipherExample {
         // Todo: What happens if the key is incorrect? (Try with RC4 or AES in CTR mode)
 
         // STEP 5: Create a string from a byte array
-        System.out.println("[MESSAGE] " + new String(dt));
+        System.out.println("[MESSAGE] " + new String(dt, StandardCharsets.UTF_8));
     }
 }
